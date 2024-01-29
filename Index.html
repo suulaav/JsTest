@@ -1,1 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dropdown Builder Example</title>
+</head>
+<body>
 
+  <script>
+  // Dropdown Builder
+class DropdownBuilder {
+  constructor() {
+    this.dropdowns = [];
+  }
+
+  addDropdown(options, onChange) {
+    this.dropdowns.push({ options, onChange });
+    return this;
+  }
+
+  build() {
+    this.dropdowns.forEach((dropdown, index) => {
+      const dropdownElement = document.createElement('select');
+      dropdownElement.id = `dropdown-${index}`;
+      dropdownElement.addEventListener('change', () => {
+        dropdown.onChange(dropdownElement.value);
+        this.updateDropdowns(index + 1);
+      });
+
+      dropdown.options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        dropdownElement.appendChild(optionElement);
+      });
+
+      document.body.appendChild(dropdownElement);
+    });
+  }
+
+  updateDropdowns(startIndex) {
+    for (let i = startIndex; i < this.dropdowns.length; i++) {
+      const dropdown = this.dropdowns[i];
+      const prevDropdownValue = document.getElementById(`dropdown-${i - 1}`).value;
+
+      // Update options based on the selected value in the previous dropdown
+      // Replace this logic with your specific requirements
+      const updatedOptions = getUpdatedOptions(prevDropdownValue);
+
+      const currentDropdown = document.getElementById(`dropdown-${i}`);
+      currentDropdown.innerHTML = '';
+
+      updatedOptions.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        currentDropdown.appendChild(optionElement);
+      });
+    }
+  }
+}
+
+// Example usage
+const builder = new DropdownBuilder();
+
+builder
+  .addDropdown(['Option A', 'Option B', 'Option C'], value => console.log(`Selected: ${value}`))
+  .addDropdown(['Option 1', 'Option 2', 'Option 3'], value => console.log(`Selected: ${value}`))
+  .addDropdown(['Choice X', 'Choice Y', 'Choice Z'], value => console.log(`Selected: ${value}`))
+  .build();
+</script>
+
+</body>
+</html>
