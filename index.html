@@ -7,22 +7,21 @@
 </head>
 <body>
 
-  <script>
-  // Dropdown Builder
+  <script>// Dropdown Builder
 class DropdownBuilder {
   constructor() {
     this.dropdowns = [];
   }
 
-  addDropdown(options, onChange) {
-    this.dropdowns.push({ options, onChange });
+  addDropdown(id, options, onChange) {
+    this.dropdowns.push({ id, options, onChange });
     return this;
   }
 
   build() {
     this.dropdowns.forEach((dropdown, index) => {
       const dropdownElement = document.createElement('select');
-      dropdownElement.id = `dropdown-${index}`;
+      dropdownElement.id = dropdown.id;
       dropdownElement.addEventListener('change', () => {
         dropdown.onChange(dropdownElement.value);
         this.updateDropdowns(index + 1);
@@ -42,13 +41,11 @@ class DropdownBuilder {
   updateDropdowns(startIndex) {
     for (let i = startIndex; i < this.dropdowns.length; i++) {
       const dropdown = this.dropdowns[i];
-      const prevDropdownValue = document.getElementById(`dropdown-${i - 1}`).value;
+      const prevDropdownValue = document.getElementById(this.dropdowns[i - 1].id).value;
 
-      // Update options based on the selected value in the previous dropdown
-      // Replace this logic with your specific requirements
-      const updatedOptions = getUpdatedOptions(prevDropdownValue);
+      const updatedOptions = dropdown.adapter.getOptions(prevDropdownValue);
 
-      const currentDropdown = document.getElementById(`dropdown-${i}`);
+      const currentDropdown = document.getElementById(dropdown.id);
       currentDropdown.innerHTML = '';
 
       updatedOptions.forEach(option => {
@@ -61,14 +58,31 @@ class DropdownBuilder {
   }
 }
 
+// Adapter for Dropdown B
+class DropdownBAdapter {
+  getOptions(value) {
+    // Replace this logic with your specific requirements
+    if (value === 'a1') {
+      return ['aa1', 'aa2', 'aa3'];
+    } else if (value === 'a2') {
+      return ['aaa1', 'aaa2', 'aaa3'];
+    } else {
+      return [];
+    }
+  }
+}
+
 // Example usage
 const builder = new DropdownBuilder();
 
 builder
-  .addDropdown(['Option A', 'Option B', 'Option C'], value => console.log(`Selected: ${value}`))
-  .addDropdown(['Option 1', 'Option 2', 'Option 3'], value => console.log(`Selected: ${value}`))
-  .addDropdown(['Choice X', 'Choice Y', 'Choice Z'], value => console.log(`Selected: ${value}`))
+  .addDropdown('dropdownA', ['a1', 'a2', 'a3'], value => console.log(`Selected A: ${value}`))
+  .addDropdown('dropdownB', [], value => console.log(`Selected B: ${value}`))
+  .addDropdown('dropdownC', [], value => console.log(`Selected C: ${value}`))
   .build();
+
+// Set adapter for Dropdown B
+builder.dropdowns[1].adapter = new DropdownBAdapter();
 </script>
 
 </body>
